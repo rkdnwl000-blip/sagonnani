@@ -47,12 +47,13 @@
     "scheme": "sagonnani-company",
     "extra": {
       "apiUrl": "https://api.sagonnani.com/api/v1",
+      "router": {
+        "origin": false
+      },
       "eas": {
-        "projectId": "YOUR_EAS_PROJECT_ID_COMPANY"
+        "projectId": "4e964eae-99bd-410f-9062-83609c2f0356"
       }
     },
-    "updates": {
-      "url": "https://u.expo.dev/YOUR_EAS_PROJECT_ID_COMPANY"
-    }
+    "owner": "rkdnwl-leesanghyeok"
   }
 }

@@ -38,7 +38,9 @@
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
         "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE"
+        "VIBRATE",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "plugins": [
@@ -66,12 +68,13 @@
     },
     "extra": {
       "apiUrl": "https://api.sagonnani.com/api/v1",
+      "router": {
+        "origin": false
+      },
       "eas": {
-        "projectId": "YOUR_EAS_PROJECT_ID"
+        "projectId": "d4141245-f514-4acc-b041-50c6357360e7"
       }
     },
-    "updates": {
-      "url": "https://u.expo.dev/YOUR_EAS_PROJECT_ID"
-    }
+    "owner": "rkdnwl-leesanghyeok"
   }
 }
