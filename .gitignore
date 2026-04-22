@@ -1,0 +1,23 @@
+node_modules
+dist
+.next
+.expo
+build
+.env
+.env.local
+.env.*.local
+.env.production
+*.log
+.turbo
+
+# 보안 파일
+google-play-key.json
+firebase-service-account.json
+nginx/ssl/
+
+# 기기별 개발 환경
+*.env.device
+
+# OS
+.DS_Store
+Thumbs.db

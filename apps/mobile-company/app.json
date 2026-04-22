@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "사고났니? 업체",
+    "slug": "sagonnani-company",
+    "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#FFD600"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.sagonnani.company",
+      "googleServicesFile": "./GoogleService-Info.plist"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFD600"
+      },
+      "package": "com.sagonnani.company",
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#FFD600",
+          "sounds": []
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "scheme": "sagonnani-company",
+    "extra": {
+      "apiUrl": "https://api.sagonnani.com/api/v1",
+      "eas": {
+        "projectId": "YOUR_EAS_PROJECT_ID_COMPANY"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/YOUR_EAS_PROJECT_ID_COMPANY"
+    }
+  }
+}

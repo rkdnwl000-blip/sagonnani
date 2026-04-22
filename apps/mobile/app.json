@@ -1,0 +1,77 @@
+{
+  "expo": {
+    "name": "사고났니?",
+    "slug": "sagonnani",
+    "version": "1.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFD600"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.sagonnani.customer",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "NSCameraUsageDescription": "차량 인수 사진 촬영에 사용됩니다.",
+        "NSPhotoLibraryUsageDescription": "차량 사진 업로드에 사용됩니다."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFD600"
+      },
+      "package": "com.sagonnani.customer",
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#FFD600",
+          "sounds": []
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "차량 인수 사진 촬영에 카메라 접근이 필요합니다."
+        }
+      ],
+      "expo-secure-store"
+    ],
+    "scheme": "sagonnani",
+    "web": {
+      "bundler": "metro",
+      "output": "single"
+    },
+    "extra": {
+      "apiUrl": "https://api.sagonnani.com/api/v1",
+      "eas": {
+        "projectId": "YOUR_EAS_PROJECT_ID"
+      }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/YOUR_EAS_PROJECT_ID"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "sagonnani",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "start": "bash scripts/start-dev.sh",
+    "stop": "bash scripts/stop-dev.sh",
+    "setup:aws": "node scripts/setup-aws.mjs",
+    "setup:firebase": "node scripts/setup-firebase.mjs"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0"
+  },
+  "packageManager": "yarn@1.22.22"
+}

@@ -1,0 +1,57 @@
+name: 프로덕션 배포
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/api/**'
+      - 'apps/admin/**'
+      - 'packages/shared/**'
+      - 'docker-compose.prod.yml'
+      - 'nginx/**'
+
+jobs:
+  deploy:
+    name: EC2 배포
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: EC2 SSH 배포
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          timeout: 600s
+          script: |
+            set -e
+            cd ~/sagonnani
+
+            echo "▶ 최신 코드 pull..."
+            git pull origin main
+
+            echo "▶ Docker 이미지 빌드 및 배포..."
+            docker compose -f docker-compose.prod.yml --env-file .env.production build --no-cache
+            docker compose -f docker-compose.prod.yml --env-file .env.production up -d --remove-orphans
+
+            echo "▶ 미사용 이미지 정리..."
+            docker image prune -f
+
+            echo "✅ 배포 완료!"
+
+      - name: 배포 결과 Slack 알림
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            ${{ job.status == 'success' && '✅ 배포 성공!' || '❌ 배포 실패!' }}
+            Branch: `${{ github.ref_name }}`
+            Commit: ${{ github.event.head_commit.message }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true  # Slack 미설정 시에도 워크플로우 성공 처리

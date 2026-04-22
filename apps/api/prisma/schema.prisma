@@ -1,0 +1,245 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===== 사용자 (고객) =====
+model User {
+  id          String     @id @default(uuid())
+  phone       String     @unique
+  name        String
+  email       String?    @unique
+  password    String
+  role        UserRole   @default(CUSTOMER)
+  status      UserStatus @default(ACTIVE)
+  fcmToken    String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  requests    RentalRequest[]
+  reviews     Review[]
+
+  @@map("users")
+}
+
+// ===== 렌터카 업체 =====
+model Company {
+  id              String        @id @default(uuid())
+  businessName    String
+  businessNumber  String        @unique
+  ownerName       String
+  phone           String        @unique
+  email           String?       @unique
+  password        String
+  address         String
+  status          CompanyStatus @default(PENDING)
+  fcmToken        String?
+  commissionBalance Int         @default(0)  // 충전 잔액 (원)
+  rating          Float         @default(0)
+  ratingCount     Int           @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  vehicles        Vehicle[]
+  quotes          Quote[]
+  reviews         Review[]
+
+  @@map("companies")
+}
+
+// ===== 보유 차량 (업체) =====
+model Vehicle {
+  id           String          @id @default(uuid())
+  companyId    String
+  name         String          // 차량명 (ex: 현대 아반떼)
+  plateNumber  String          @unique
+  year         Int
+  category     VehicleCategory
+  isAvailable  Boolean         @default(true)
+  dailyRate    Int             // 일일 대차 비용 (원)
+  photos       String[]        // 차량 이미지 URL 배열
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  company      Company         @relation(fields: [companyId], references: [id])
+  quotes       Quote[]
+
+  @@map("vehicles")
+}
+
+// ===== 대차 요청 (고객) =====
+model RentalRequest {
+  id              String         @id @default(uuid())
+  userId          String
+  accidentType    AccidentType
+  accidentDate    DateTime
+  accidentLocation String
+  vehicleCategory VehicleCategory
+  myVehicleModel  String         // 사고 차량 모델
+  myVehiclePlate  String         // 사고 차량 번호
+  insuranceCompany String?       // 보험사
+  insuranceNumber  String?       // 사고 접수 번호
+  status          RequestStatus  @default(PENDING)
+  desiredPickupAt DateTime?
+  memo            String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  user            User           @relation(fields: [userId], references: [id])
+  quotes          Quote[]
+  vehiclePhotos   VehiclePhoto[]
+
+  @@map("rental_requests")
+}
+
+// ===== 업체 견적/응답 =====
+model Quote {
+  id          String      @id @default(uuid())
+  requestId   String
+  companyId   String
+  vehicleId   String
+  dailyRate   Int
+  message     String?
+  status      QuoteStatus @default(PENDING)
+  expiresAt   DateTime
+  confirmedAt DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  request     RentalRequest @relation(fields: [requestId], references: [id])
+  company     Company       @relation(fields: [companyId], references: [id])
+  vehicle     Vehicle       @relation(fields: [vehicleId], references: [id])
+
+  @@map("quotes")
+}
+
+// ===== 차량 인수 사진 (분쟁 방지) =====
+model VehiclePhoto {
+  id          String     @id @default(uuid())
+  requestId   String
+  angle       PhotoAngle
+  url         String
+  takenAt     DateTime   @default(now())
+  phase       PhotoPhase @default(PICKUP)  // 인수 or 반납
+
+  request     RentalRequest @relation(fields: [requestId], references: [id])
+
+  @@map("vehicle_photos")
+}
+
+// ===== 리뷰 =====
+model Review {
+  id          String   @id @default(uuid())
+  userId      String
+  companyId   String
+  rating      Int      // 1~5
+  comment     String?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id])
+  company     Company  @relation(fields: [companyId], references: [id])
+
+  @@map("reviews")
+}
+
+// ===== 충전 내역 =====
+model CommissionTransaction {
+  id          String              @id @default(uuid())
+  companyId   String
+  amount      Int                 // 양수: 충전, 음수: 차감
+  type        TransactionType
+  requestId   String?
+  // 토스페이먼츠 결제 관련
+  orderId     String?             @unique
+  paymentKey  String?
+  status      TxStatus            @default(SUCCESS)
+  createdAt   DateTime            @default(now())
+
+  @@map("commission_transactions")
+}
+
+// ===== Enums =====
+enum UserRole {
+  CUSTOMER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING
+}
+
+enum CompanyStatus {
+  PENDING    // 승인 대기
+  ACTIVE     // 정상 영업
+  SUSPENDED  // 정지
+}
+
+enum VehicleCategory {
+  UNDER_2000CC
+  CC_2000_3000
+  CC_3000_4000
+  OVER_4000CC_OR_EV
+}
+
+enum AccidentType {
+  REAR_END
+  SIDE_COLLISION
+  FRONT_COLLISION
+  SINGLE
+  OTHER
+}
+
+enum RequestStatus {
+  PENDING
+  MATCHING
+  CONFIRMED
+  IN_USE
+  RETURNED
+  CANCELLED
+}
+
+enum QuoteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum PhotoAngle {
+  FRONT
+  REAR
+  LEFT
+  RIGHT
+  FRONT_LEFT
+  FRONT_RIGHT
+  REAR_LEFT
+  REAR_RIGHT
+  DASHBOARD
+  WHEEL_FRONT_LEFT
+  WHEEL_FRONT_RIGHT
+  WHEEL_REAR_LEFT
+  WHEEL_REAR_RIGHT
+}
+
+enum PhotoPhase {
+  PICKUP   // 인수 시
+  RETURN   // 반납 시
+}
+
+enum TransactionType {
+  CHARGE    // 충전
+  DEDUCT    // 수수료 차감
+  REFUND    // 환불
+}
+
+enum TxStatus {
+  PENDING   // 결제 대기
+  SUCCESS   // 완료
+  FAILED    // 실패
+}
