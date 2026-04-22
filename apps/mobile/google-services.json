@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "410959751851",
+    "project_id": "sagonnani",
+    "storage_bucket": "sagonnani.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410959751851:android:e15df9561a32dd97e565ee",
+        "android_client_info": {
+          "package_name": "com.sagonnani.company"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcKhjlNNTrBKwv_qhPskjfeg-ehxeMRF0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410959751851:android:3f6d2451a13d1955e565ee",
+        "android_client_info": {
+          "package_name": "com.sagonnani.customer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcKhjlNNTrBKwv_qhPskjfeg-ehxeMRF0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

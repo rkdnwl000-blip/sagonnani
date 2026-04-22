@@ -18,7 +18,13 @@ export class NotificationsService {
   }
 
   private initFirebase() {
-    const serviceAccount = this.config.get('FIREBASE_SERVICE_ACCOUNT');
+    // Base64 인코딩된 서비스 계정 우선, 없으면 JSON 문자열 시도
+    const base64 = this.config.get('FIREBASE_SERVICE_ACCOUNT_BASE64');
+    const raw = this.config.get('FIREBASE_SERVICE_ACCOUNT');
+    const serviceAccount = base64
+      ? Buffer.from(base64, 'base64').toString('utf-8')
+      : raw;
+
     if (!serviceAccount) {
       this.logger.warn('Firebase 서비스 계정이 설정되지 않았습니다. 푸시 알림이 비활성화됩니다.');
       return;
@@ -30,6 +36,7 @@ export class NotificationsService {
         });
       }
       this.initialized = true;
+      this.logger.log('Firebase 초기화 완료');
     } catch (e) {
       this.logger.error('Firebase 초기화 실패:', e);
     }
