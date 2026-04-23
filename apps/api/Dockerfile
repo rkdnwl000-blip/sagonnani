@@ -1,22 +1,24 @@
 # Stage 1: Builder
-FROM node:20-alpine AS builder
+FROM node:20-slim AS builder
 
 WORKDIR /app
 
-# Install build tools
-RUN apk add --no-cache python3 make g++
+# Install build tools (Debian 기반)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 make g++ openssl \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy workspace config
 COPY package.json yarn.lock ./
 COPY packages/shared/package.json ./packages/shared/
 COPY apps/api/package.json ./apps/api/
 
+# Install all dependencies
+RUN yarn workspace @sagonnani/api install --frozen-lockfile
+
 # Copy source
 COPY packages/shared/ ./packages/shared/
 COPY apps/api/ ./apps/api/
-
-# Install all dependencies (including devDependencies for build)
-RUN yarn workspace @sagonnani/api install --frozen-lockfile
 
 # Generate Prisma client
 RUN yarn workspace @sagonnani/api prisma generate
@@ -27,11 +29,13 @@ RUN yarn workspace @sagonnani/api build
 # ---
 
 # Stage 2: Production image
-FROM node:20-alpine AS runner
+FROM node:20-slim AS runner
 
 WORKDIR /app
 
-RUN apk add --no-cache dumb-init
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssl dumb-init \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
 
@@ -57,7 +61,6 @@ WORKDIR /app/apps/api
 
 EXPOSE 3000
 
-# Run migrations then start server
 COPY apps/api/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
