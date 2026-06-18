@@ -3,10 +3,9 @@ import { Provider } from 'react-redux';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
-import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 import { store } from '../src/store';
-import { authApi } from '../src/services/api';
+import { authApi, storage } from '../src/services/api';
 
 // 포그라운드 알림 표시 설정
 Notifications.setNotificationHandler({
@@ -32,7 +31,7 @@ async function registerForPushNotifications() {
 
   try {
     const token = await Notifications.getExpoPushTokenAsync();
-    const authToken = await SecureStore.getItemAsync('auth_token');
+    const authToken = await storage.getItem('auth_token');
     if (authToken) {
       await authApi.updateFcmToken(token.data);
     }

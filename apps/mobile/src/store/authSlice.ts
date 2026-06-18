@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import * as SecureStore from 'expo-secure-store';
-import { authApi } from '../services/api';
+import { authApi, storage } from '../services/api';
 
 interface AuthState {
   user: any | null;
@@ -14,7 +13,7 @@ const initialState: AuthState = { user: null, token: null, loading: false, error
 export const loginUser = createAsyncThunk('auth/loginUser', async (data: any, { rejectWithValue }) => {
   try {
     const res: any = await authApi.loginUser(data);
-    await SecureStore.setItemAsync('auth_token', res.token);
+    await storage.setItem('auth_token', res.token);
     return res;
   } catch (e: any) {
     return rejectWithValue(e.message);
@@ -24,7 +23,7 @@ export const loginUser = createAsyncThunk('auth/loginUser', async (data: any, { 
 export const registerUser = createAsyncThunk('auth/registerUser', async (data: any, { rejectWithValue }) => {
   try {
     const res: any = await authApi.registerUser(data);
-    await SecureStore.setItemAsync('auth_token', res.token);
+    await storage.setItem('auth_token', res.token);
     return res;
   } catch (e: any) {
     return rejectWithValue(e.message);
@@ -32,7 +31,7 @@ export const registerUser = createAsyncThunk('auth/registerUser', async (data: a
 });
 
 export const logout = createAsyncThunk('auth/logout', async () => {
-  await SecureStore.deleteItemAsync('auth_token');
+  await storage.deleteItem('auth_token');
 });
 
 const authSlice = createSlice({

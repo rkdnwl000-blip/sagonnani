@@ -1,7 +1,26 @@
 import axios from 'axios';
+import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000/api/v1';
+
+// 웹에서는 localStorage, 앱에서는 SecureStore 사용
+const storage = {
+  getItem: async (key: string) => {
+    if (Platform.OS === 'web') return localStorage.getItem(key);
+    return SecureStore.getItemAsync(key);
+  },
+  setItem: async (key: string, value: string) => {
+    if (Platform.OS === 'web') return localStorage.setItem(key, value);
+    return SecureStore.setItemAsync(key, value);
+  },
+  deleteItem: async (key: string) => {
+    if (Platform.OS === 'web') return localStorage.removeItem(key);
+    return SecureStore.deleteItemAsync(key);
+  },
+};
+
+export { storage };
 
 export const apiClient = axios.create({
   baseURL: API_URL,
@@ -11,7 +30,7 @@ export const apiClient = axios.create({
 
 // 요청 인터셉터: JWT 토큰 자동 첨부
 apiClient.interceptors.request.use(async (config) => {
-  const token = await SecureStore.getItemAsync('auth_token');
+  const token = await storage.getItem('auth_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
