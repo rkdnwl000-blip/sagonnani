@@ -52,9 +52,8 @@ COPY apps/api/prisma/ ./apps/api/prisma/
 RUN yarn workspace @sagonnani/api install --frozen-lockfile --production && \
     yarn cache clean
 
-# Copy built output and generated Prisma client
+# Copy built output and generated Prisma client (hoisted to root node_modules by Yarn workspaces)
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
-COPY --from=builder /app/apps/api/node_modules/.prisma ./apps/api/node_modules/.prisma
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 WORKDIR /app/apps/api
